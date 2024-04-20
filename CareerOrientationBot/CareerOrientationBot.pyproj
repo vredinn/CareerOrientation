@@ -21,8 +21,20 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="handlers\delete_account.py" />
+    <Compile Include="app\keyboards.py" />
+    <Compile Include="handlers\registration.py" />
     <Compile Include="CareerOrientationBot.py" />
     <Compile Include="config.py" />
+    <Compile Include="database.py" />
+    <Compile Include="handlers\get_start.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="app\" />
+    <Folder Include="handlers\" />
+    <Folder Include="filters\" />
+    <Folder Include="keyboards\" />
+    <Folder Include="utils\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
