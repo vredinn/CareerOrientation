@@ -13,5 +13,6 @@ start_reg = InlineKeyboardMarkup(inline_keyboard=[
 
 #Клавиатура для удаления аккаунта
 delete = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Да', callback_data='Yes')], [InlineKeyboardButton(text='Нет', callback_data='No')]
+    [InlineKeyboardButton(text='Да', callback_data='deleteYes')], [InlineKeyboardButton(text='Нет', callback_data='deleteNo')]
 ])
+

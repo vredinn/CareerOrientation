@@ -2,7 +2,7 @@
 import aiogram
 import asyncio
 import logging
-
+from app.loader import loop
 from aiogram import Bot, Dispatcher
 from handlers import get_start, registration, delete_account
 
@@ -18,6 +18,6 @@ async def main():
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     try:
-        asyncio.run(main())
+        loop.run_until_complete(main())
     except KeyboardInterrupt:
         print('Закрытие')

@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup,State
 import app.keyboards as kb
 from handlers import get_start
-import database
+from database.db import Database
 
 router = Router()
 
@@ -23,25 +23,17 @@ async def delete_account(callback: CallbackQuery, state: FSMContext):
     await callback.answer('')
 
 #подтверждение удаления
-@router.callback_query(DeleteState.delete_comfirmation, F.data == 'Yes')
+@router.callback_query(DeleteState.delete_comfirmation, F.data.startswith('delete'))
 async def confirm_delete(callback: CallbackQuery, state: FSMContext): 
-    db = database.Database('dbbot.db')
-    users = db.select_user(callback.from_user.id)
-    db.delete_user(callback.from_user.id)
-    await callback.answer('')
-    await callback.message.edit_text('Данные о пользователе удалены')
-    await callback.message.answer('👋Привет! \
-                                     \n🤖Я Профориентатор,Ваш виртуалный помошник в выборе будующей профессии. \
-                                     \n⚡️Для начала необходимо пройти небольшую регистрацию.',
-                                     reply_markup=kb.start_unreg)
-    await state.clear()
-
-#отмена удаления
-@router.callback_query(DeleteState.delete_comfirmation, F.data == 'No')
-async def cancel_delete(callback: CallbackQuery, state: FSMContext):
-    db = database.Database('dbbot.db')
-    users = db.select_user(callback.from_user.id)
-    await callback.message.edit_text(f'{users[1]}\nЗдравствуй',
-                            reply_markup=kb.start_reg)  
+    match callback.data:
+        case "deleteYes":
+            db = Database()
+            try:
+                await db.delete_user(callback.from_user.id)
+            finally:
+                await callback.message.edit_text('Данные о пользователе удалены')
+        case "deleteNo":
+            await callback.message.edit_text('Удаление данных отменено')
+    await get_start.startCallback(callback)
     await callback.answer('')
     await state.clear()    
