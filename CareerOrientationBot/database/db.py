@@ -1,7 +1,5 @@
 from aiomysql import Pool, Cursor
-import sqlite3
 from asyncio import exceptions
-import config
 from database.connect import db_connect
 
 class Database():
@@ -28,3 +26,18 @@ class Database():
             async with conn.cursor(Cursor) as cur:
                 await cur.execute("DELETE FROM users WHERE telegram_id = %s", telegram_id)
                 await conn.commit()
+                
+#Добавление професии 
+    async def insert_prof(self, telegram_id, prof_id):
+        async with self.pool.acquire() as conn:
+            async with conn.cursor(Cursor) as cur:
+                await cur.execute("UPDATE users SET profession = %s WHERE telegram_id = %s", (telegram_id, prof_id))
+                await conn.commit()
+                
+#Поиск професси по категории
+    async def select_prof(self, prof_category):
+        async with self.pool.acquire() as conn:
+            async with conn.cursor(Cursor) as cur:
+                await cur.execute("SELECT * FROM professions WHERE prof_category = %s", prof_category)
+                await conn.commit()
+                return await cur.fetchall()

@@ -1,13 +1,9 @@
-from ast import Call
 from aiogram import F, Router
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, CallbackQuery, callback_query
 from aiogram.fsm.state import StatesGroup,State
 from aiogram.fsm.context import FSMContext
 import app.keyboards as kb
-import re
-import os
-import config
 from database.db import Database
     
 router = Router()

@@ -30,6 +30,7 @@
     <Compile Include="CareerOrientationBot.py" />
     <Compile Include="config.py" />
     <Compile Include="handlers\get_start.py" />
+    <Compile Include="handlers\test.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="app\" />
@@ -37,11 +38,11 @@
     <Folder Include="handlers\" />
     <Folder Include="filters\" />
     <Folder Include="keyboards\" />
+    <Folder Include="test\" />
     <Folder Include="utils\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="database\database.mwb" />
-    <Content Include="database\database.mwb.bak" />
+    <Content Include="test\questions.json" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

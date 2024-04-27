@@ -6,7 +6,6 @@ from aiogram.fsm.context import FSMContext
 import app.keyboards as kb
 from handlers import get_start
 import re
-import os
 from database.db import Database
 
 router = Router()
