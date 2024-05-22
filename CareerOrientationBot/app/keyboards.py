@@ -20,3 +20,13 @@ delete = InlineKeyboardMarkup(inline_keyboard=[
 start_test = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Приступить', callback_data='testing_start')], [InlineKeyboardButton(text='Отменить тестирование', callback_data='cancel_test')]
 ])
+
+#Клавиатура результатов тестирования
+result_test = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Ознакомиться с результаты', callback_data='result')], [InlineKeyboardButton(text='Отменить тестирование', callback_data='cancel_test')]
+])
+
+#Клавиатура результатов тестирования
+result_show = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Пройти тест повторно', callback_data='start_test')], [InlineKeyboardButton(text='Отменить тестирование', callback_data='cancel_test')]
+])

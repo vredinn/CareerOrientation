@@ -31,7 +31,7 @@ class Database():
     async def insert_prof(self, telegram_id, prof_id):
         async with self.pool.acquire() as conn:
             async with conn.cursor(Cursor) as cur:
-                await cur.execute("UPDATE users SET profession = %s WHERE telegram_id = %s", (telegram_id, prof_id))
+                await cur.execute("UPDATE users SET profession = %s WHERE telegram_id = %s", (prof_id, telegram_id))
                 await conn.commit()
                 
 #Поиск професси по категории
@@ -39,5 +39,13 @@ class Database():
         async with self.pool.acquire() as conn:
             async with conn.cursor(Cursor) as cur:
                 await cur.execute("SELECT * FROM professions WHERE prof_category = %s", prof_category)
+                await conn.commit()
+                return await cur.fetchall()
+
+#Поиск професси по id
+    async def select_prof_byId(self, prof_id):
+        async with self.pool.acquire() as conn:
+            async with conn.cursor(Cursor) as cur:
+                await cur.execute("SELECT * FROM professions WHERE prof_id = %s", prof_id)
                 await conn.commit()
                 return await cur.fetchall()

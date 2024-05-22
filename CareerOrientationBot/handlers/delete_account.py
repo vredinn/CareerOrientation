@@ -16,7 +16,8 @@ class DeleteState(StatesGroup):
 #Удаление аккаунта
 @router.callback_query(F.data == 'delete_account')
 async def delete_account(callback: CallbackQuery, state: FSMContext): 
-    await callback.message.edit_text('Вы действительно хотите удалить данные о себе?',
+    await callback.message.delete()
+    await callback.message.answer('Вы действительно хотите удалить данные о себе?',
                                      reply_markup=kb.delete)    
     await state.set_state(DeleteState.delete_comfirmation)
     await callback.answer('')
@@ -32,7 +33,7 @@ async def confirm_delete(callback: CallbackQuery, state: FSMContext):
             finally:
                 await callback.message.edit_text('Данные о пользователе удалены')
         case "deleteNo":
-            await callback.message.edit_text('Удаление данных отменено')
+            await callback.message.delete()
     await get_start.startCallback(callback)
     await callback.answer('')
     await state.clear()    

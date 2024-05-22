@@ -18,23 +18,17 @@ class RegisterState(StatesGroup):
 #Регистрация
 
 @router.callback_query(F.data == 'registration')
-async def registration_name(callback: CallbackQuery, state: FSMContext):    
-    db = Database()
-    users = await db.select_user(callback.from_user.id)
-    if(users):
-        await callback.answer('')
-        await callback.message.edit_text(f'{users[1]}\nВы уже зарегистрированы')
-    else:
-        await state.set_state(RegisterState.user_name)
-        await callback.answer('')
-        await callback.message.edit_text('Укажите Ваше имя, чтобы я знал как мне к Вам обращаться:')
+async def registration_name(callback: CallbackQuery, state: FSMContext): 
+    await state.set_state(RegisterState.user_name)
+    await callback.answer('')
+    await callback.message.edit_text('🪪Укажите Ваше имя, чтобы я знал как мне к Вам обращаться:')
 
 #Ввод имени
 @router.message(RegisterState.user_name)
 async def registration_number(message: Message, state: FSMContext):
     await state.update_data(user_name=message.text)
     await state.set_state(RegisterState.user_phone)
-    await message.answer('Введите номер телефона:')
+    await message.answer('📞Введите номер телефона в формате +7**********:')
 
 #Ввод телефона и завершение регистрации
 @router.message(RegisterState.user_phone)
@@ -49,5 +43,5 @@ async def registration_complete(message: Message, state: FSMContext):
         await get_start.start(message)
         await state.clear()
     else:
-        await message.answer('Номер указан в неправильном формате (+7**********)')
+        await message.answer('❌Номер указан в неправильном формате (+7**********)')
         
