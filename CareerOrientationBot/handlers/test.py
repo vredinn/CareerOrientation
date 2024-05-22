@@ -125,6 +125,7 @@ async def result(callback: CallbackQuery, state: FSMContext):
             case 'hud': 
                 prof_type_name.insert(0,'Человек-художественный образ')
                 prof_type_code.insert(0, '5')
+                
     prof_list = list()
     for pn in prof_type_code:
         prof_list.insert(0,await db.select_prof(pn))

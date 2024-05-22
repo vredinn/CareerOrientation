@@ -21,18 +21,27 @@ class RegisterState(StatesGroup):
 async def registration_name(callback: CallbackQuery, state: FSMContext): 
     await state.set_state(RegisterState.user_name)
     await callback.answer('')
-    await callback.message.edit_text('🪪Укажите Ваше имя, чтобы я знал как мне к Вам обращаться:')
+    msg = await callback.message.edit_text('🪪Укажите Ваше имя, чтобы я знал как мне к Вам обращаться:')
+    await state.update_data(message_id = msg.message_id)
 
 #Ввод имени
 @router.message(RegisterState.user_name)
 async def registration_number(message: Message, state: FSMContext):
+    message_data = await state.get_data()
+    message_id =  message_data.get('message_id')
+    print(message_id)
     await state.update_data(user_name=message.text)
     await state.set_state(RegisterState.user_phone)
-    await message.answer('📞Введите номер телефона в формате +7**********:')
+    await message.bot.delete_message(message.from_user.id,message_id)
+    msg = await message.answer('📞Введите номер телефона в формате +7**********:') 
+    await state.update_data(message_id = msg.message_id)
 
 #Ввод телефона и завершение регистрации
 @router.message(RegisterState.user_phone)
-async def registration_complete(message: Message, state: FSMContext):
+async def registration_complete(message: Message, state: FSMContext):    
+    message_data = await state.get_data()
+    message_id =  message_data.get('message_id')
+    await message.bot.delete_message(message.from_user.id,message_id)
     if(re.findall('^\+?[7][-\(]?\d{3}\)?\d{3}-?\d{2}-?\d{2}$', message.text)):
         await state.update_data(user_phone=message.text)
         regdata = await state.get_data() 
@@ -42,6 +51,7 @@ async def registration_complete(message: Message, state: FSMContext):
         await db.insert_user(reg_name, reg_phone, message.from_user.id)
         await get_start.start(message)
         await state.clear()
-    else:
-        await message.answer('❌Номер указан в неправильном формате (+7**********)')
+    else:        
+        msg = await message.answer('❌Номер указан в неправильном формате (+7**********)')
+        await state.update_data(message_id = msg.message_id)
         

@@ -31,7 +31,7 @@ async def confirm_delete(callback: CallbackQuery, state: FSMContext):
             try:
                 await db.delete_user(callback.from_user.id)
             finally:
-                await callback.message.edit_text('Данные о пользователе удалены')
+                await callback.message.delete()
         case "deleteNo":
             await callback.message.delete()
     await get_start.startCallback(callback)
