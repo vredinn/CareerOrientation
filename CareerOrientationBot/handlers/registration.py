@@ -29,7 +29,6 @@ async def registration_name(callback: CallbackQuery, state: FSMContext):
 async def registration_number(message: Message, state: FSMContext):
     message_data = await state.get_data()
     message_id =  message_data.get('message_id')
-    print(message_id)
     await state.update_data(user_name=message.text)
     await state.set_state(RegisterState.user_phone)
     await message.bot.delete_message(message.from_user.id,message_id)

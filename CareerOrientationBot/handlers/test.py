@@ -1,4 +1,5 @@
 import asyncio
+from aiogram.exceptions import TelegramBadRequest
 from asyncio.windows_events import NULL
 from calendar import c
 import imp
@@ -29,15 +30,13 @@ class TestState(StatesGroup):
 #Начало тестирования
 @router.callback_query(F.data == 'start_test')
 async def start_test(callback: CallbackQuery, state: FSMContext):
-    
+    await callback.message.delete()
     with open('test/questions.json', 'r') as json_file:                                             #Открытие JSON 
-        questions_list = json.load(json_file)
-        
+        questions_list = json.load(json_file)    
     await state.update_data(questions_count = len(questions_list['questions']))
     await state.update_data(current_question = 0)
     await state.update_data(questions = questions_list['questions'])
     await state.set_state(TestState.testing)
-    await callback.message.delete()
     await callback.message.answer('❓Тест состоит из 20 вопросов \
                                      \n\n📝В каждом вопросе Вам будет предложено выбрать одну из двух видов деятельности, которая вам больше нравится \
                                      \n\n⏳Время прохождения теста ~ 5 минут', reply_markup=kb.start_test)
