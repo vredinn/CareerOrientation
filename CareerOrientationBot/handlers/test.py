@@ -1,9 +1,5 @@
 import asyncio
 from aiogram.exceptions import TelegramBadRequest
-from calendar import c
-import imp
-from tkinter import N
-from turtle import update
 from aiogram import F, Router
 from aiogram.filters import CommandStart, Command
 from aiogram.types import BufferedInputFile, InputFile, Message, CallbackQuery, callback_query
