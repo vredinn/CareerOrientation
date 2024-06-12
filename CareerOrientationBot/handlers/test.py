@@ -1,4 +1,3 @@
-import asyncio
 from aiogram.exceptions import TelegramBadRequest
 from aiogram import F, Router
 from aiogram.filters import CommandStart, Command
@@ -10,8 +9,6 @@ from aiogram.fsm.context import FSMContext
 import json
 import app.keyboards as kb
 from handlers import get_start
-import re
-import os
 from database.db import Database
 
 router = Router()
@@ -25,7 +22,10 @@ class TestState(StatesGroup):
 #Начало тестирования
 @router.callback_query(F.data == 'start_test')
 async def start_test(callback: CallbackQuery, state: FSMContext):
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except Exception:
+        print('сообщение не удалено')
     with open('test/questions.json', 'r') as json_file:                                             #Открытие JSON 
         questions_list = json.load(json_file)    
     await state.update_data(questions_count = len(questions_list['questions']))
@@ -75,8 +75,12 @@ async def answer_question(callback: CallbackQuery, state: FSMContext):
                 TestState.scores['prir'] = TestState.scores['prir'] + 1
                 
     #Переход к следующему вопросы
-    if questions_data.get('current_question') != questions_data.get('questions_count'):   
-        await callback.message.edit_text('❔<b>Вопрос ' + str(questions_data.get('current_question') + 1) + 
+    if questions_data.get('current_question') != questions_data.get('questions_count'):  
+        try:
+            await callback.message.delete()
+        except Exception:
+            print('сообщение не удалено') 
+        await callback.message.answer('❔<b>Вопрос ' + str(questions_data.get('current_question') + 1) + 
                                                     ' из ' + str(questions_data.get('questions_count')) +
                                                     '</b>\n\n👉<u>Выберите вид деятельности, который вам больше нравится:</u>\n\n' + qList[questions_data.get('current_question')]['answers'][0]['text'] + '\n\n' +  
                                             qList[questions_data.get('current_question')]['answers'][1]['text'],
@@ -90,7 +94,11 @@ async def answer_question(callback: CallbackQuery, state: FSMContext):
         await callback.answer('')
     #Конец тестирования
     else:        
-        await callback.message.edit_text('✅<b>Тест пройден</b>', reply_markup=kb.result_test)
+        try:
+            await callback.message.delete()
+        except Exception:
+            print('сообщение не удалено')
+        await callback.message.answer('✅<b>Тест пройден</b>', reply_markup=kb.result_test)
         await callback.answer('')
 
 @router.callback_query(TestState.testing, F.data == 'result')
@@ -129,7 +137,11 @@ async def result(callback: CallbackQuery, state: FSMContext):
         prof_type_string = prof_type_string + prof + '\n'
 #Вывод результатов тестирования
     if not prof_list:
-        await callback.message.edit_text(f'''
+        try:
+            await callback.message.delete()
+        except Exception:
+            print('сообщение не удалено')
+        await callback.message.answer(f'''
 <u>Ваша предрасполженность к типам професий:</u>
                                          
 🧍‍♂️Человек-человек: {TestState.scores['chel']}
@@ -156,7 +168,11 @@ async def result(callback: CallbackQuery, state: FSMContext):
         else:            
             result_kb_builder.attach(InlineKeyboardBuilder.from_markup(kb.result_show))
             result_kb_builder.adjust(1, True)
-            await callback.message.edit_text(f'''
+            try:
+                await callback.message.delete()
+            except Exception:
+                print('сообщение не удалено')
+            await callback.message.answer(f'''
 ✅<b>Тест пройден</b>
 
 <u>Ваша предрасполженность к типам професий:</u>
@@ -177,10 +193,13 @@ async def result(callback: CallbackQuery, state: FSMContext):
  #Отмена тестирования
 @router.callback_query(TestState.testing, F.data == 'cancel_test')
 async def cancel_test(callback: CallbackQuery, state: FSMContext):
+    try:        
         await callback.message.delete()
-        await state.clear()
-        await callback.answer('')
-        await get_start.startCallback(callback)
+    except Exception:
+        print('сообщение не удалено')
+    await state.clear()
+    await callback.answer('')
+    await get_start.startCallback(callback)
 
 #Просмотр професии
 @router.callback_query(TestState.testing, F.data.startswith('prof_'))
@@ -189,7 +208,10 @@ async def cancel_test(callback: CallbackQuery, state: FSMContext):
     await state.update_data(result_message_text = callback.message.text)
     await state.update_data(result_message_keyboard = callback.message.reply_markup)
     prof = await db.select_prof_byId(callback.data.split("_")[1])
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except Exception:
+        print('сообщение не удалено')
     await callback.message.answer_photo(photo= BufferedInputFile(prof[0][5], filename="photo.jpg"),
                                         caption=f'<b><u>Специальность: {prof[0][1]}</u></b>\n\n{prof[0][3]}\n\n<a href = "{prof[0][4]}">Узнать подробнее о поступлении на данную специальность</a>',
                                         reply_markup=InlineKeyboardMarkup(inline_keyboard=[
@@ -203,7 +225,10 @@ async def cancel_test(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(TestState.testing, F.data == 'back_to_results')
 async def cancel_test(callback: CallbackQuery, state: FSMContext):
     result_data = await state.get_data()
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except Exception:
+        print('сообщение не удалено')
     await callback.message.answer(result_data.get('result_message_text'), reply_markup=result_data.get('result_message_keyboard'))        
     await callback.answer('')
 
@@ -211,7 +236,10 @@ async def cancel_test(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(TestState.testing, F.data.startswith('choose_prof_'))
 async def choose_prof(callback: CallbackQuery, state: FSMContext):
     db = Database()
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except Exception:
+        print('сообщение не удалено')
     await db.insert_prof(callback.from_user.id, callback.data.split("_")[2])
     await callback.message.answer('🎉🎊Поздравляем с выбором специальности!🎊🎉', reply_markup=InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='Ура', callback_data='end_test')]]))        
     await callback.answer('')
@@ -219,7 +247,10 @@ async def choose_prof(callback: CallbackQuery, state: FSMContext):
 #Завершение тестирования
 @router.callback_query(TestState.testing, F.data.startswith('end_test'))
 async def choose_prof(callback: CallbackQuery, state: FSMContext):
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except Exception:
+        print('сообщение не удалено')
     await state.clear()
     await callback.answer('')
     await get_start.startCallback(callback)

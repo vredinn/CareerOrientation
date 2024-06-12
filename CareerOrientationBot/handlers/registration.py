@@ -21,7 +21,11 @@ class RegisterState(StatesGroup):
 async def registration_name(callback: CallbackQuery, state: FSMContext): 
     await state.set_state(RegisterState.user_name)
     await callback.answer('')
-    msg = await callback.message.edit_text('🪪Укажите Ваше имя, чтобы я знал как мне к Вам обращаться:')
+    try:
+        await callback.message.delete()
+    except Exception:
+        print('сообщение не удалено')
+    msg = await callback.message.answer('🪪Укажите Ваше имя, чтобы я знал как мне к Вам обращаться:')
     await state.update_data(message_id = msg.message_id)
 
 #Ввод имени
@@ -31,7 +35,10 @@ async def registration_number(message: Message, state: FSMContext):
     message_id =  message_data.get('message_id')
     await state.update_data(user_name=message.text)
     await state.set_state(RegisterState.user_phone)
-    await message.bot.delete_message(message.from_user.id,message_id)
+    try:
+        await message.bot.delete_message(message.from_user.id,message_id)
+    except Exception:
+        print('сообщение не удалено')
     msg = await message.answer('📞Введите номер телефона в формате +7**********:') 
     await state.update_data(message_id = msg.message_id)
 
@@ -40,7 +47,10 @@ async def registration_number(message: Message, state: FSMContext):
 async def registration_complete(message: Message, state: FSMContext):    
     message_data = await state.get_data()
     message_id =  message_data.get('message_id')
-    await message.bot.delete_message(message.from_user.id,message_id)
+    try:
+        await message.bot.delete_message(message.from_user.id,message_id)
+    except Exception:
+        print('сообщение не удалено')
     if(re.findall('^\+?[7][-\(]?\d{3}\)?\d{3}-?\d{2}-?\d{2}$', message.text)):
         await state.update_data(user_phone=message.text)
         regdata = await state.get_data() 
